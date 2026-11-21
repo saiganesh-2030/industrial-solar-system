@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Solar Prediction - Industrial Solar Feasibility</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="navbar-container"></div>
+
+    <main class="main-container">
+        <header class="page-header">
+            <h1>Generation Prediction</h1>
+            <p>48-Hour forward generation forecast produced by the Random Forest pipeline using live inputs.</p>
+        </header>
+
+        <!-- Sizing & Plant Selection controls -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Interactive Factory Solar Capacity Simulation</span>
+                <span class="source-tag model-prediction">MODEL PREDICTION</span>
+            </div>
+            <div style="display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 250px;">
+                    <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 0.4rem;">
+                        Target Factory Solar Sizing: <span id="capacity-slider-val" style="color: var(--primary); font-weight: 700;">100 kW</span>
+                    </label>
+                    <input type="range" id="capacity-slider" min="20" max="1000" step="10" value="100" style="width: 100%;">
+                </div>
+                <div>
+                    <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 0.4rem;">
+                        Active Reference Plant
+                    </label>
+                    <div style="padding-top: 0.15rem;">
+                        <span id="active-prediction-plant" class="badge badge-info" style="font-size: 0.85rem; padding: 0.4rem 0.75rem;">Plant 1 (4135001)</span>
+                    </div>
+                </div>
+                <div style="text-align: right; margin-left: auto;">
+                    <div class="stat-label">Total 48-Hour Generation</div>
+                    <div id="total-48h-val" style="font-size: 1.3rem; font-weight: 700; color: var(--solar-amber);">-- kWh</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 48-Hour Generation Chart -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">48-Hour Hourly Generation Curve (kW)</span>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">
+                    Open-Meteo Hourly Irradiance &rarr; Regression Module Temp &rarr; RF Pipeline
+                </div>
+            </div>
+            <div style="height: 340px; position: relative;">
+                <canvas id="prediction-48h-chart"></canvas>
+            </div>
+            <div style="background-color: var(--solar-bg); border: 1px solid var(--solar-border); border-radius: 6px; padding: 0.75rem 1rem; margin-top: 1rem; font-size: 0.82rem;">
+                <strong>Normalised Yield Methodology:</strong> The ML model outputs AC power in kW based on a multi-megawatt utility plant. To apply this to factory rooftop or ground-mount systems, the model generation is divided by the reference plant's observed peak to obtain a unitless yield fraction (0.0 to 1.0), which is then multiplied by the factory's target capacity in kW.
+            </div>
+        </div>
+
+        <!-- Inputs and Transformation Table -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Model Input Measurements and Feature Conversion Log</span>
+                <span class="source-tag live-api">LIVE API + REGRESSION</span>
+            </div>
+            <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Forecast Time</th>
+                            <th>Ambient Temp (°C)</th>
+                            <th>Estimated Module Temp (°C)</th>
+                            <th>Radiation (W/m²)</th>
+                            <th>Model Irradiation (kW/m²)</th>
+                            <th>Yield Fraction</th>
+                            <th>Scaled Output (kW)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="prediction-table-body">
+                        <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Loading model predictions...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top: 0.8rem; font-size: 0.78rem; color: var(--text-secondary); background: #f8fafc; padding: 0.6rem; border-radius: 4px;">
+                <strong>Faculty Verification Note on Module Temperature:</strong> Weather forecast APIs only provide ambient air temperature. PV panels heat significantly under solar absorption. We derive module surface temperature through linear regression fitted on dataset records: <code>MODULE_TEMP = -2.1415 + (1.0303 * AMBIENT) + (27.9989 * IRRADIATION)</code> with an R² of 0.9709.
+            </div>
+        </div>
+
+        <div id="limitations-container"></div>
+    </main>
+
+    <footer>
+        Industrial Solar Power Prediction and Energy Feasibility Analysis System | Academic Project
+    </footer>
+
+    <script src="js/common.js"></script>
+    <script src="js/prediction.js"></script>
+</body>
+</html>

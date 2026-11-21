@@ -1,0 +1,128 @@
+[
+  {
+    "id": 26,
+    "location": "Industrial Facility Site",
+    "plant_id": 4135001,
+    "input_measurements": "{\"additionalProp1\": {}}",
+    "predicted_kw": 0.0,
+    "predicted_at": "2026-11-20 22:51:00",
+    "status": "Saved to SQLite"
+  },
+  {
+    "id": 25,
+    "location": "Industrial Facility Site",
+    "plant_id": 4135001,
+    "input_measurements": "{\"additionalProp1\": {}}",
+    "predicted_kw": 0.0,
+    "predicted_at": "2026-11-20 22:34:03",
+    "status": "Saved to SQLite"
+  },
+  {
+    "id": 24,
+    "location": "Industrial Facility Site",
+    "plant_id": 4135001,
+    "input_measurements": "{\"additionalProp1\": {}}",
+    "predicted_kw": 0.0,
+    "predicted_at": "2026-11-20 22:33:56",
+    "status": "Saved to SQLite"
+  },
+  {
+    "id": 23,
+    "location": "Audit Facility",
+    "plant_id": 4135001,
+    "input_measurements": "{\"ambient_temp\": 31.0, \"capacity_kw\": 100, \"irradiation_wm2\": 700.0, \"time\": \"11:00\"}",
+    "predicted_kw": 70.5,
+    "predicted_at": "2026-11-20 22:04:53",
+    "status": "Saved to SQLite"
+  },
+  {
+    "id": 22,
+    "location": "Audit Facility",
+    "plant_id": 4135001,
+    "input_measurements": "{\"ambient_temp\": 31.0, \"capacity_kw\": 100, \"irradiation_wm2\": 700.0, \"time\": \"11:00\"}",
+    "predicted_kw": 70.5,
+    "predicted_at": "2026-11-20 20:33:27",
+    "status": "Saved to SQLite"
+  },
+  {
+    "id": 21,
+    "location": "Hyderabad, Telangana",
+    "plant_id": 4135001,
+    "input_measurements": "{\"ambient_temp\": 32, \"irradiation_wm2\": 750, \"time\": \"12:00\", \"capacity_kw\": 100}",
+    "predicted_kw": 73.12,
+    "predicted_at": "2026-11-20 18:55:52",
+    "status": "Saved to SQLite"
+  },
+  {
+    "id": 20,
+    "location": "Audit Facility",
+    "plant_id": 4135001,
+    "input_measurements": "{\"ambient_temp\": 31.0, \"capacity_kw\": 100, \"irradiation_wm2\": 700.0, \"time\": \"11:00\"}",
+    "predicted_kw": 70.5,
+    "predicted_at": "2026-11-20 16:41:43",
+    "status": "Saved to SQLite"
+  },
+  {
+    "id": 19,
+    "location": "Audit Facility",
+    "plant_id": 4135001,
+    "input_measurements": "{\"ambient_temp\": 31.0, \"capacity_kw\": 100, \"irradiation_wm2\": 700.0, \"time\": \"11:00\"}",
+    "predicted_kw": 70.5,
+    "predicted_at": "2026-11-20 16:36:39",
+    "status": "Saved to SQLite"
+  },
+  {
+    "id": 1,
+    "location": "Hyderabad, Telangana",
+    "plant_id": 4135001,
+    "input_measurements": "{\"ambient_temp\": 34.0, \"irradiation_wm2\": 850.0, \"time\": \"12:30\", \"capacity_kw\": 100.0, \"module_temp\": 52.8}",
+    "predicted_kw": 89.2,
+    "predicted_at": "2026-11-20 12:30:00",
+    "status": "Stored in Database"
+  },
+  {
+    "id": 2,
+    "location": "Bengaluru, Karnataka",
+    "plant_id": 4135001,
+    "input_measurements": "{\"ambient_temp\": 29.5, \"irradiation_wm2\": 520.0, \"time\": \"10:00\", \"capacity_kw\": 100.0, \"module_temp\": 41.2}",
+    "predicted_kw": 54.8,
+    "predicted_at": "2026-11-20 10:00:00",
+    "status": "Stored in Database"
+  },
+  {
+    "id": 3,
+    "location": "Chennai, Tamil Nadu",
+    "plant_id": 4136001,
+    "input_measurements": "{\"ambient_temp\": 36.0, \"irradiation_wm2\": 890.0, \"time\": \"13:00\", \"capacity_kw\": 100.0, \"module_temp\": 55.4}",
+    "predicted_kw": 72.4,
+    "predicted_at": "2026-11-20 13:00:00",
+    "status": "Stored in Database"
+  },
+  {
+    "id": 4,
+    "location": "Ahmedabad, Gujarat",
+    "plant_id": 4136001,
+    "input_measurements": "{\"ambient_temp\": 27.0, \"irradiation_wm2\": 310.0, \"time\": \"08:45\", \"capacity_kw\": 100.0, \"module_temp\": 33.6}",
+    "predicted_kw": 28.5,
+    "predicted_at": "2026-11-20 08:45:00",
+    "status": "Stored in Database"
+  },
+  {
+    "id": 5,
+    "location": "Jaipur, Rajasthan",
+    "plant_id": 4135001,
+    "input_measurements": "{\"ambient_temp\": 33.0, \"irradiation_wm2\": 440.0, \"time\": \"15:15\", \"capacity_kw\": 100.0, \"module_temp\": 43.1}",
+    "predicted_kw": 46.1,
+    "predicted_at": "2026-11-20 15:15:00",
+    "status": "Stored in Database"
+  },
+  {
+    "id": 6,
+    "location": "Mumbai, Maharashtra",
+    "plant_id": 4136001,
+    "input_measurements": "{\"ambient_temp\": 31.0, \"irradiation_wm2\": 190.0, \"time\": \"16:30\", \"capacity_kw\": 100.0, \"module_temp\": 35.2}",
+    "predicted_kw": 16.8,
+    "predicted_at": "2026-11-20 16:30:00",
+    "status": "Stored in Database"
+  }
+]

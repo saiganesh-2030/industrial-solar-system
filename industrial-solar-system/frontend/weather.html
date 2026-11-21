@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Weather & Solar Climatology - Industrial Solar Feasibility</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="navbar-container"></div>
+
+    <main class="main-container">
+        <header class="page-header">
+            <h1>Weather &amp; Solar Climatology</h1>
+            <p>Real-time meteorological monitoring via Open-Meteo and NASA POWER solar radiation records.</p>
+        </header>
+
+        <!-- Current weather metrics grid -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <span class="card-title">Live Site Meteorological Telemetry</span>
+                    <span id="weather-tag" style="margin-left: 0.5rem;"></span>
+                </div>
+                <div id="weather-timestamp" style="font-size: 0.78rem; color: var(--text-muted);">Fetched: --</div>
+            </div>
+            <div class="grid-4">
+                <div class="stat-card">
+                    <div class="stat-label">Air Temperature</div>
+                    <div id="w-temp" class="stat-value">-- °C</div>
+                    <div class="stat-subtext">2m ambient elevation</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Solar Irradiance</div>
+                    <div id="w-rad" class="stat-value">-- W/m²</div>
+                    <div id="w-irrad" class="stat-subtext">-- kW/m²</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Cloud Cover</div>
+                    <div id="w-cloud" class="stat-value">-- %</div>
+                    <div class="stat-subtext">Total sky coverage</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Relative Humidity</div>
+                    <div id="w-hum" class="stat-value">-- %</div>
+                    <div class="stat-subtext">Vapor saturation</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Wind Speed</div>
+                    <div id="w-wind" class="stat-value">-- km/h</div>
+                    <div class="stat-subtext">10m anemometer</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Precipitation</div>
+                    <div id="w-precip" class="stat-value">-- mm</div>
+                    <div class="stat-subtext">Hourly rain accumulation</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Annual Peak Sun Hours</div>
+                    <div id="psh-val" class="stat-value" style="color: var(--solar-amber);">-- PSH</div>
+                    <div class="stat-subtext">NASA POWER Long-Term Mean</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Weather Suitability</div>
+                    <div id="suit-val" class="stat-value" style="color: var(--success);">-- / 100</div>
+                    <div id="suit-cat" class="stat-subtext">Evaluating...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Solar Suitability Score Breakdown card -->
+        <div class="card" style="border-left: 4px solid var(--solar-amber);">
+            <div class="card-header">
+                <span class="card-title">Weather Suitability Index Breakdown</span>
+                <span class="source-tag model-prediction">EXPLAINABLE FORMULA</span>
+            </div>
+            <p id="suit-summary-full" style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1rem;"></p>
+            <div class="grid-4" style="margin-bottom: 1rem;">
+                <div style="background: #f8fafc; padding: 0.75rem; border-radius: 6px; border: 1px solid var(--border-color);">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">1. RADIATION COMPONENT</div>
+                    <div id="pts-rad" style="font-size: 1.3rem; font-weight: 700; color: var(--text-primary);">-- / 40 pts</div>
+                    <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.2rem;">Direct sunlight driver</div>
+                </div>
+                <div style="background: #f8fafc; padding: 0.75rem; border-radius: 6px; border: 1px solid var(--border-color);">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">2. SKY CLARITY COMPONENT</div>
+                    <div id="pts-cloud" style="font-size: 1.3rem; font-weight: 700; color: var(--text-primary);">-- / 30 pts</div>
+                    <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.2rem;">Penalty for thick cloud cover</div>
+                </div>
+                <div style="background: #f8fafc; padding: 0.75rem; border-radius: 6px; border: 1px solid var(--border-color);">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">3. PRECIPITATION COMPONENT</div>
+                    <div id="pts-rain" style="font-size: 1.3rem; font-weight: 700; color: var(--text-primary);">-- / 15 pts</div>
+                    <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.2rem;">Penalty for active rainfall</div>
+                </div>
+                <div style="background: #f8fafc; padding: 0.75rem; border-radius: 6px; border: 1px solid var(--border-color);">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">4. THERMAL FACTOR</div>
+                    <div id="pts-temp" style="font-size: 1.3rem; font-weight: 700; color: var(--text-primary);">-- / 15 pts</div>
+                    <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.2rem;">Derating penalty above 35 °C</div>
+                </div>
+            </div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); background: #ffffff; padding: 0.6rem; border-radius: 4px; border: 1px solid var(--border-color);">
+                <strong>Formula Explanation for Faculty:</strong> Total Score = Radiation (max 40) + Sky Clarity (max 30) + Precipitation Factor (max 15) + Thermal Efficiency (max 15). Score &ge; 80 is categorized as Excellent, 60-79 as Good, 40-59 as Moderate, and &lt; 40 as Poor.
+            </div>
+        </div>
+
+        <!-- 2-column charts: 48h Hourly Weather & NASA POWER Monthly Radiation -->
+        <div class="grid-2">
+            <!-- Hourly Forecast Chart -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">48-Hour Meteorological Trend</span>
+                    <span class="source-tag live-api">OPEN-METEO</span>
+                </div>
+                <div style="height: 280px; position: relative;">
+                    <canvas id="hourly-weather-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- NASA POWER Climatology Chart -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Monthly Solar Radiation (NASA POWER)</span>
+                    <span class="source-tag historical-api">HISTORICAL API</span>
+                </div>
+                <div style="height: 280px; position: relative;">
+                    <canvas id="monthly-radiation-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div id="limitations-container"></div>
+    </main>
+
+    <footer>
+        Industrial Solar Power Prediction and Energy Feasibility Analysis System | Academic Project
+    </footer>
+
+    <script src="js/common.js"></script>
+    <script src="js/weather.js"></script>
+</body>
+</html>

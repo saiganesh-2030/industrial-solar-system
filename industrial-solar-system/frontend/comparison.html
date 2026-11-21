@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Options Comparison - Industrial Solar Feasibility</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="navbar-container"></div>
+
+    <main class="main-container">
+        <header class="page-header">
+            <h1>Options Comparison</h1>
+            <p>Lifecycle financial comparison: Grid Only, Hybrid, and Solar-Max.</p>
+        </header>
+
+        <!-- 3-Way Summary Cards -->
+        <div class="grid-3" style="margin-bottom: 1.5rem;">
+            <!-- Grid Only -->
+            <div class="card" style="border-top: 4px solid var(--text-muted);">
+                <div class="card-header">
+                    <span class="card-title">Option 1: GRID ONLY</span>
+                    <span class="source-tag historical-api">BASELINE</span>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                    100% utility grid dependency. Zero initial investment, but maximum operational energy expense.
+                </div>
+                <div class="stat-card" style="margin-bottom: 0.5rem;">
+                    <div class="stat-label">Annual Grid Electricity Bill</div>
+                    <div id="grid-cost-val" class="stat-value" style="color: var(--danger);">--</div>
+                </div>
+                <div class="stat-card" style="margin-bottom: 0.5rem;">
+                    <div class="stat-label">Installation Capex</div>
+                    <div class="stat-value">Rs 0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Levelized Energy Cost</div>
+                    <div id="grid-rate-val" class="stat-value" style="font-size: 1.1rem;">-- / kWh</div>
+                </div>
+            </div>
+
+            <!-- Hybrid Option -->
+            <div class="card" style="border-top: 4px solid var(--primary);">
+                <div class="card-header">
+                    <span class="card-title" id="hybrid-title">Option 2: HYBRID</span>
+                    <span class="badge badge-success">OPTIMAL</span>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                    Sized to maximize daytime self-consumption while avoiding uncredited grid export.
+                </div>
+                <div class="stat-card" style="margin-bottom: 0.5rem;">
+                    <div class="stat-label">Annual Combined Energy Cost</div>
+                    <div id="hybrid-cost-val" class="stat-value" style="color: var(--primary);">--</div>
+                </div>
+                <div class="stat-card" style="margin-bottom: 0.5rem;">
+                    <div class="stat-label">Installation Capex</div>
+                    <div id="hybrid-capex-val" class="stat-value">--</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Payback &amp; Annual Savings</div>
+                    <div id="hybrid-payback-val" class="stat-value" style="font-size: 1.1rem; color: var(--success);">--</div>
+                </div>
+            </div>
+
+            <!-- Solar-Max Option -->
+            <div class="card" style="border-top: 4px solid var(--solar-amber);">
+                <div class="card-header">
+                    <span class="card-title">Option 3: SOLAR-MAX (100%)</span>
+                    <span class="badge badge-warning">FULL SIZING</span>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                    100% capacity matching full daily factory demand. Higher capex with potential surplus export.
+                </div>
+                <div class="stat-card" style="margin-bottom: 0.5rem;">
+                    <div class="stat-label">Annual Combined Energy Cost</div>
+                    <div id="solarmax-cost-val" class="stat-value" style="color: var(--solar-amber);">--</div>
+                </div>
+                <div class="stat-card" style="margin-bottom: 0.5rem;">
+                    <div class="stat-label">Installation Capex</div>
+                    <div id="solarmax-capex-val" class="stat-value">--</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Payback &amp; Annual Savings</div>
+                    <div id="solarmax-payback-val" class="stat-value" style="font-size: 1.1rem; color: var(--success);">--</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Grid: Annual Bill Comparison & 25-Year Cumulative Savings -->
+        <div class="grid-2">
+            <!-- Annual Bill Bar Chart -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Annual Electricity Expense Comparison</span>
+                    <span class="source-tag model-prediction">ANNUAL BILL</span>
+                </div>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="annual-cost-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- 25-Year Cumulative Savings Trajectory -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">25-Year Net Economic Savings Trajectory</span>
+                    <span class="source-tag model-prediction">CASHFLOW</span>
+                </div>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="cumulative-savings-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div id="limitations-container"></div>
+    </main>
+
+    <footer>
+        Industrial Solar Power Prediction and Energy Feasibility Analysis System | Academic Project
+    </footer>
+
+    <script src="js/common.js"></script>
+    <script src="js/comparison.js"></script>
+</body>
+</html>

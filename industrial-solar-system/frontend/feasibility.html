@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Feasibility Engine - Industrial Solar Feasibility</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div id="navbar-container"></div>
+
+    <main class="main-container">
+        <header class="page-header">
+            <h1>Feasibility Analysis</h1>
+            <p>24-Hour hourly simulation across system sizes, lifecycle economics, and sizing recommendations.</p>
+        </header>
+
+        <!-- Industry selector & site parameters -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Industrial Consumer Setup</span>
+                <span class="source-tag benchmark-estimate">BENCHMARK ESTIMATE</span>
+            </div>
+            <div style="display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 260px;">
+                    <label
+                        style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 0.35rem;">
+                        Select Industry Type (Benchmark Profile)
+                    </label>
+                    <select id="industry-select" class="form-control" style="font-weight: 500;">
+                        <option value="Light Manufacturing" selected>Light Manufacturing (250 kW Connected Load)
+                        </option>
+                        <option value="Textile Mill">Textile Mill (500 kW Connected Load)</option>
+                        <option value="Food Processing">Food Processing (300 kW Connected Load)</option>
+                        <option value="Cold Storage">Cold Storage (180 kW Connected Load)</option>
+                        <option value="IT & Office Park">IT & Office Park (400 kW Connected Load)</option>
+                        <option value="Large Machining & Fabrication">Large Machining & Fabrication (750 kW Connected
+                            Load)</option>
+                    </select>
+                </div>
+                <div style="flex: 1; min-width: 220px;">
+                    <label
+                        style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 0.35rem;">
+                        Applicable Industrial Electricity Tariff
+                    </label>
+                    <div style="font-size: 1.15rem; font-weight: 700; color: var(--primary);">
+                        <span id="tariff-val-display">--</span>
+                        <span id="tariff-badge-wrap" style="margin-left: 0.4rem;"></span>
+                    </div>
+                    <div id="tariff-discom-text" style="font-size: 0.75rem; color: var(--text-muted);">DISCOM: --</div>
+                </div>
+                <div style="text-align: right; margin-left: auto; display: flex; gap: 0.5rem; align-items: center;">
+                    <button class="btn-primary" onclick="triggerReanalysis()">Run Re-simulation</button>
+                    <button class="btn-location" onclick="window.print()" title="Print summary report">Print
+                        Report</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 1 & 2: Sizing Formula and Demand Calculation -->
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Step 1: Factory Energy Demand</span>
+                    <span class="source-tag benchmark-estimate">BEE BENCHMARK</span>
+                </div>
+                <div class="grid-2" style="margin-bottom: 0.8rem;">
+                    <div class="stat-card">
+                        <div class="stat-label">Daily Demand</div>
+                        <div id="step-daily-demand" class="stat-value">-- kWh</div>
+                        <div class="stat-subtext">Sum of 24h load profile</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Annual Demand</div>
+                        <div id="step-annual-demand" class="stat-value">-- kWh</div>
+                        <div class="stat-subtext">365-day operation</div>
+                    </div>
+                </div>
+                <p id="industry-desc-text" style="font-size: 0.82rem; color: var(--text-secondary);"></p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Step 2: Solar Sizing Formulation</span>
+                    <span class="source-tag model-prediction">SIZING RULE</span>
+                </div>
+                <div
+                    style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 6px; padding: 0.75rem; font-size: 0.85rem; margin-bottom: 0.75rem;">
+                    <div style="color: var(--text-muted); font-size: 0.75rem; font-weight: 600;">ACADEMIC FORMULA:</div>
+                    <code
+                        style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem;">Capacity (kW) = Daily Demand / (Peak Sun Hours &times; PR)</code>
+                    <div id="step-sizing-calc" style="margin-top: 0.5rem; color: var(--primary); font-weight: 600;">--
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">100% Benchmark Sizing Capacity</div>
+                    <div id="step-100-capacity" class="stat-value" style="color: var(--solar-amber);">-- kW</div>
+                    <div class="stat-subtext">Full offset of factory daytime requirement</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Four System Sizing Options Comparison Table -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Step 3: Hourly Time-Aligned Multi-Size Evaluation (25%, 50%, 75%, 100%)</span>
+                <span class="source-tag model-prediction">LIFECYCLE SIMULATION</span>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>System Sizing</th>
+                            <th>Capacity (kW)</th>
+                            <th>Capex Cost (INR)</th>
+                            <th>Annual Generation (kWh)</th>
+                            <th>Self-Consumed (kWh)</th>
+                            <th>Grid Import (kWh)</th>
+                            <th>Annual Savings (INR)</th>
+                            <th>Payback (Years)</th>
+                            <th>ROI (%)</th>
+                            <th>Levelized Solar Cost (Rs/kWh)</th>
+                            <th>25-Yr Net Savings (INR)</th>
+                            <th>CO2 Avoided (t/yr)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sizes-table-body">
+                        <tr>
+                            <td colspan="12" style="text-align: center; color: var(--text-muted);">Running simulation...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div
+                style="margin-top: 0.8rem; font-size: 0.78rem; color: var(--text-secondary); background: #f8fafc; padding: 0.6rem; border-radius: 4px;">
+                <strong>Explanation of Terms for Faculty:</strong>
+                <code>Self-Consumption = &Sigma; min(G_t, D_t)</code> |
+                <code>Grid Import = &Sigma; max(0, D_t - G_t)</code> |
+                <code>Export = &Sigma; max(0, G_t - D_t)</code> |
+                <code>Payback = Installation Cost / Annual Net Savings</code> |
+                <code>Levelized Solar Cost (T_solar) = (Capex / 25-Yr Generation) + O&M per kWh</code>
+            </div>
+        </div>
+
+        <!-- Step 4: Final Recommendation & Confidence -->
+        <div class="card" style="border-left: 4px solid var(--primary); background: #ffffff;">
+            <div class="card-header">
+                <div>
+                    <span class="card-title">Step 4: Final Recommendation and Decision Rule</span>
+                    <span id="feas-conf-badge" style="margin-left: 0.5rem;"></span>
+                </div>
+                <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">
+                    Decision Metric: 25-Year Net Economic Benefit
+                </div>
+            </div>
+            <div style="display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; margin-bottom: 1rem;">
+                <div>
+                    <div class="stat-label">System Recommendation</div>
+                    <div id="final-decision-badge" style="font-size: 1.8rem; font-weight: 800; color: var(--primary);">
+                        --</div>
+                </div>
+                <div>
+                    <div class="stat-label">Capacity</div>
+                    <div id="final-cap-val" style="font-size: 1.4rem; font-weight: 700;">-- kW</div>
+                </div>
+                <div>
+                    <div class="stat-label">Payback</div>
+                    <div id="final-payback-val" style="font-size: 1.4rem; font-weight: 700; color: var(--success);">--
+                        Yrs</div>
+                </div>
+                <div>
+                    <div class="stat-label">Annual Net Savings</div>
+                    <div id="final-savings-val" style="font-size: 1.4rem; font-weight: 700; color: var(--success);">--
+                    </div>
+                </div>
+                <div>
+                    <div class="stat-label">CO2 Avoided</div>
+                    <div id="final-co2-val" style="font-size: 1.4rem; font-weight: 700; color: var(--success);">-- t/yr
+                    </div>
+                </div>
+            </div>
+            <p id="final-rec-text" style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+            </p>
+            <div
+                style="background: #f8fafc; padding: 0.75rem; border-radius: 6px; font-size: 0.8rem; border: 1px solid var(--border-color);">
+                <strong>Recommendation Rules Applied:</strong>
+                <ul style="margin-left: 1.2rem; margin-top: 0.3rem;">
+                    <li>If Payback &le; 7 years with positive annual savings &rarr; Recommend HYBRID or SOLAR-MAX
+                        (highest 25-year net economic savings).</li>
+                    <li>If Payback &gt; 10 years or savings negative &rarr; Recommend continuing with GRID ONLY.</li>
+                    <li>Otherwise &rarr; Recommend HYBRID with marginal suitability note.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Assumptions Panel -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Underlying System and Financial Assumptions</span>
+                <span class="source-tag assumption">ASSUMPTION</span>
+            </div>
+            <div class="grid-4" style="font-size: 0.82rem;">
+                <div style="padding: 0.5rem; background: #f8fafc; border-radius: 4px;">
+                    <strong>Performance Ratio (PR):</strong> 0.75 (soiling, temperature, inverter conversion)
+                </div>
+                <div style="padding: 0.5rem; background: #f8fafc; border-radius: 4px;">
+                    <strong>Annual PV Degradation:</strong> 0.5% per year (standard silicon warranty)
+                </div>
+                <div style="padding: 0.5rem; background: #f8fafc; border-radius: 4px;">
+                    <strong>Annual O&M Cost:</strong> 1% of initial capital expenditure annually
+                </div>
+                <div style="padding: 0.5rem; background: #f8fafc; border-radius: 4px;">
+                    <strong>System Lifespan:</strong> 25 years (standard tier-1 industrial PV life)
+                </div>
+            </div>
+        </div>
+
+        <div id="limitations-container"></div>
+    </main>
+
+    <footer>
+        Industrial Solar Power Prediction and Energy Feasibility Analysis System | Academic Project
+    </footer>
+
+    <script src="js/common.js"></script>
+    <script src="js/feasibility.js"></script>
+</body>
+
+</html>

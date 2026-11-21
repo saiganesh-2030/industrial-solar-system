@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industrial Solar Power Prediction and Energy Feasibility System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="navbar-container"></div>
+
+    <main class="main-container">
+        <header class="page-header">
+            <h1>Solar Dashboard</h1>
+            <p>Solar generation forecasting, live weather suitability, and industrial financial feasibility.</p>
+        </header>
+
+        <!-- Active Plant Banner -->
+        <div id="active-plant-banner" style="margin-bottom: 1.25rem; background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; padding: 0.75rem 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <span class="badge badge-info" id="active-plant-badge" style="font-size: 0.82rem; padding: 0.35rem 0.65rem;">Plant 1 (4135001)</span>
+                <span id="active-plant-desc" style="font-size: 0.85rem; color: var(--text-secondary);">
+                    Standard Field Array | Max Observed Peak: 29,150 kW | Unconstrained Midday Curve
+                </span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
+                <span style="color: var(--text-muted);">Switch Plant:</span>
+                <button class="btn-sm" id="btn-switch-plant-1" onclick="savePlantId(4135001)">Plant 1</button>
+                <button class="btn-sm" id="btn-switch-plant-2" onclick="savePlantId(4136001)">Plant 2</button>
+            </div>
+        </div>
+
+        <!-- Top headline recommendation & confidence -->
+        <div class="card" style="border-left: 4px solid var(--solar-amber); background: linear-gradient(to right, #ffffff, #fffdfa);">
+            <div class="card-header">
+                <div>
+                    <span class="card-title">Headline Energy Feasibility Recommendation</span>
+                    <span id="rec-source-tag" style="margin-left: 0.5rem;"></span>
+                </div>
+                <div id="confidence-badge-container"></div>
+            </div>
+            <div class="grid-4" style="margin-bottom: 1rem;">
+                <div class="stat-card">
+                    <div class="stat-label">Recommended Decision</div>
+                    <div id="rec-decision" class="stat-value" style="color: var(--primary);">Loading...</div>
+                    <div id="rec-subtext" class="stat-subtext">Evaluating demand and solar potential...</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">System Capacity</div>
+                    <div id="rec-capacity" class="stat-value">-- kW</div>
+                    <div class="stat-subtext">Sized for daytime industrial demand</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Estimated Annual Savings</div>
+                    <div id="rec-savings" class="stat-value" style="color: var(--success);">--</div>
+                    <div class="stat-subtext">Against industrial grid tariff</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Simple Payback Period</div>
+                    <div id="rec-payback" class="stat-value">-- Yrs</div>
+                    <div id="rec-roi" class="stat-subtext">ROI: --%</div>
+                </div>
+            </div>
+            <p id="rec-summary-text" style="font-size: 0.88rem; color: var(--text-secondary);"></p>
+        </div>
+
+        <!-- 2-column layout: live weather & solar suitability -->
+        <div class="grid-2">
+            <!-- Live Weather card -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Live Industrial Site Weather</span>
+                    <span id="weather-source-tag"></span>
+                </div>
+                <div class="grid-3" style="margin-bottom: 1rem;">
+                    <div class="stat-card">
+                        <div class="stat-label">Temperature</div>
+                        <div id="weather-temp" class="stat-value">-- °C</div>
+                        <div class="stat-subtext">Ambient air sensor</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Solar Radiation</div>
+                        <div id="weather-rad" class="stat-value">-- W/m²</div>
+                        <div id="weather-irrad" class="stat-subtext">-- kW/m²</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Cloud Cover</div>
+                        <div id="weather-cloud" class="stat-value">-- %</div>
+                        <div class="stat-subtext">Sky obscurity</div>
+                    </div>
+                </div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+                    <span id="weather-wind">Wind Speed: -- km/h</span>
+                    <span id="weather-humidity">Humidity: -- %</span>
+                    <span id="weather-fetched">Fetched: --</span>
+                </div>
+            </div>
+
+            <!-- Solar Suitability Score card -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Solar Weather Suitability</span>
+                    <span class="source-tag model-prediction">INDEX SCORE</span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem;">
+                    <div>
+                        <div id="suitability-score" style="font-size: 2.2rem; font-weight: 700; color: var(--solar-amber);">-- / 100</div>
+                        <div id="suitability-cat" style="font-weight: 600; font-size: 0.95rem;">Evaluating...</div>
+                    </div>
+                    <div id="suitability-badge-wrap"></div>
+                </div>
+                <p id="suitability-summary" style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.75rem;"></p>
+                <div style="font-size: 0.75rem; color: var(--text-muted); background: #f8fafc; padding: 0.5rem; border-radius: 4px;">
+                    <strong>Scoring Formula:</strong> Radiation (40) + Sky Clarity (30) + Precipitation Factor (15) + Thermal Efficiency (15)
+                </div>
+            </div>
+        </div>
+
+        <!-- 24-Hour Solar Generation Prediction Chart -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <span class="card-title">Next 24 Hours Solar Power Generation Forecast</span>
+                    <span id="pred-source-tag" style="margin-left: 0.5rem;"></span>
+                </div>
+                <div id="forecast-plant-ref" style="font-size: 0.8rem; color: var(--text-secondary);">
+                    Reference Plant: 4135001 | Scaled to 100 kW Benchmark System
+                </div>
+            </div>
+            <div style="height: 280px; position: relative;">
+                <canvas id="generation-forecast-chart"></canvas>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-secondary);">
+                <span>24-Hour Total Yield: <strong id="total-24h-yield">-- kWh</strong></span>
+                <span>Peak Generation: <strong id="peak-generation-val">-- kW</strong></span>
+                <a href="prediction.html" style="color: var(--primary); text-decoration: none; font-weight: 600;">View 48-Hour Deep Dive &rarr;</a>
+            </div>
+        </div>
+
+        <!-- Single-Point Model Demo Card -->
+        <div class="card" style="border-top: 3px solid var(--primary);">
+            <div class="card-header">
+                <div>
+                    <span class="card-title">Single-Point Model Demo</span>
+                    <span class="source-tag model-prediction">RANDOM FOREST PIPELINE</span>
+                </div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                    Instant single-record prediction using ambient temperature, solar irradiance, and time
+                </div>
+            </div>
+            <p style="font-size: 0.86rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                Test the Random Forest model directly. Enter the ambient temperature, solar irradiance, time, and module temperature to compute predicted AC power output. At night or with 0 irradiance, power output is strictly 0 kW.
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 0.9rem; margin-bottom: 1rem; align-items: end;">
+                <div>
+                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">
+                        Plant Selection
+                    </label>
+                    <select id="demo-plant" class="form-control" style="font-weight: 600;" onchange="savePlantId(this.value); runSinglePointDemo();">
+                        <option value="4135001">Plant 1 (4135001)</option>
+                        <option value="4136001">Plant 2 (4136001)</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">
+                        Ambient Temp (°C)
+                    </label>
+                    <input type="number" id="demo-temp" class="form-control" value="32.0" step="0.5" min="5" max="55" oninput="onAmbientOrIrradChange()">
+                </div>
+                <div>
+                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">
+                        Solar Irradiance (W/m²)
+                    </label>
+                    <input type="number" id="demo-irrad" class="form-control" value="750" step="25" min="0" max="1300" oninput="onAmbientOrIrradChange()">
+                </div>
+                <div>
+                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">
+                        Time of Day
+                    </label>
+                    <input type="time" id="demo-time" class="form-control" value="12:00" onchange="onTimeChange()">
+                </div>
+                <div>
+                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                        <span>Module Temp (°C)</span>
+                        <span id="demo-mod-temp-mode" style="font-size: 0.7rem; font-weight: 600; color: #059669; background: #ecfdf5; padding: 0.05rem 0.3rem; border-radius: 3px;">Auto</span>
+                    </label>
+                    <input type="number" id="demo-mod-temp" class="form-control" value="51.8" step="0.5" min="0" max="85" oninput="onManualModTempChange()">
+                </div>
+                <div>
+                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">
+                        System Capacity (kW)
+                    </label>
+                    <input type="number" id="demo-capacity" class="form-control" value="100" step="10" min="10" max="2000" oninput="runSinglePointDemo()">
+                </div>
+                <div>
+                    <button class="btn-primary" style="width: 100%; height: 38px;" onclick="runSinglePointDemo()">
+                        Predict Power
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick presets -->
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem; align-items: center;">
+                <span style="font-size: 0.78rem; color: var(--text-muted); align-self: center;">Quick Presets:</span>
+                <button class="btn-sm" onclick="setDemoPreset(28.0, 350, '08:30')">Morning Sun (8:30 AM)</button>
+                <button class="btn-sm" onclick="setDemoPreset(35.0, 850, '12:30')">Midday Peak (12:30 PM)</button>
+                <button class="btn-sm" onclick="setDemoPreset(31.5, 220, '16:30')">Late Afternoon (4:30 PM)</button>
+                <button class="btn-sm" onclick="setDemoPreset(24.0, 0, '22:00')">Nighttime (10:00 PM)</button>
+                <button class="btn-sm" onclick="resetAutoModTemp()" style="margin-left: auto; background: #ffffff; border: 1px solid var(--border-color); color: var(--text-secondary);">Reset Temp to Auto</button>
+            </div>
+
+            <!-- Prediction output cards -->
+            <div class="grid-4" style="margin-bottom: 0.5rem;">
+                <div class="stat-card" style="background: #f8fafc;">
+                    <div class="stat-label">Predicted System Output</div>
+                    <div id="demo-out-system-kw" class="stat-value" style="color: var(--primary);">-- kW</div>
+                    <div id="demo-out-capacity-subtext" class="stat-subtext">For 100 kW industrial installation</div>
+                </div>
+                <div class="stat-card" style="background: #f8fafc;">
+                    <div class="stat-label">Module Temp Applied</div>
+                    <div id="demo-out-mod-temp" class="stat-value" style="color: var(--warning);">-- °C</div>
+                    <div id="demo-out-mod-subtext" class="stat-subtext">Estimated via regression formula</div>
+                </div>
+                <div class="stat-card" style="background: #f8fafc;">
+                    <div class="stat-label">Yield Fraction</div>
+                    <div id="demo-out-yield-fraction" class="stat-value" style="color: var(--success);">--</div>
+                    <div class="stat-subtext">Normalized output per kW peak</div>
+                </div>
+                <div class="stat-card" style="background: #f8fafc;">
+                    <div class="stat-label">Utility Plant Raw AC</div>
+                    <div id="demo-out-utility-kw" class="stat-value">-- kW</div>
+                    <div id="demo-out-plant-subtext" class="stat-subtext">Plant 1 full field output</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SQLite Database Stored Predictions Card -->
+        <div class="card" id="mysql-records-card" style="border-top: 3px solid var(--primary);">
+            <div class="card-header">
+                <div>
+                    <span class="card-title">Relational Database: Stored Prediction Records</span>
+                    <span id="db-status-badge" class="source-tag live-api" style="margin-left: 0.5rem;">
+                        SQL DATABASE
+                    </span>
+                </div>
+                <div id="db-conn-indicator" style="font-size: 0.82rem; color: var(--text-secondary);">
+                    Database: <strong id="db-conn-text">Ready to Query</strong>
+                </div>
+            </div>
+
+            <p style="font-size: 0.86rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                Historical solar prediction outputs logged and retrieved from the SQLite relational database (table <code>solar_predictions</code> in <code>industrial_solar.db</code>). Runs out of the box on any computer with zero server setup.
+            </p>
+
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem; align-items: center;">
+                <button id="btn-fetch-mysql" class="btn-primary" onclick="retrieveMySQLPredictions()" style="display: inline-flex; align-items: center; gap: 0.45rem;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                    </svg>
+                    Retrieve Stored Predictions
+                </button>
+                <button class="btn-sm" onclick="saveCurrentDemoToMySQL()" style="padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.4rem; background: #ffffff; border: 1px solid var(--border-color); color: var(--text-secondary); border-radius: 5px; cursor: pointer;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    Save Current Demo Result to DB
+                </button>
+                <span id="db-action-feedback" style="font-size: 0.82rem; font-weight: 600; color: var(--success); display: none;"></span>
+
+                <div style="margin-left: auto; display: flex; gap: 0.5rem; align-items: center;">
+                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted);">Filter Plant:</label>
+                    <select id="db-plant-filter" class="form-control" style="padding: 0.3rem 0.6rem; font-size: 0.82rem; width: auto; font-weight: 600;" onchange="filterStoredRecords()">
+                        <option value="all">All Plants</option>
+                        <option value="4135001">Plant 1 (4135001)</option>
+                        <option value="4136001">Plant 2 (4136001)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Stored Predictions Table Container -->
+            <div id="db-table-container" style="overflow-x: auto; max-height: 380px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; background: #ffffff;">
+                <table class="data-table" style="width: 100%; border-collapse: collapse; font-size: 0.83rem;">
+                    <thead>
+                        <tr style="background: #f8fafc; text-align: left; border-bottom: 2px solid var(--border-color);">
+                            <th style="padding: 0.6rem 0.75rem;">Record ID</th>
+                            <th style="padding: 0.6rem 0.75rem;">Timestamp</th>
+                            <th style="padding: 0.6rem 0.75rem;">Plant</th>
+                            <th style="padding: 0.6rem 0.75rem;">Location</th>
+                            <th style="padding: 0.6rem 0.75rem;">Input Measurements</th>
+                            <th style="padding: 0.6rem 0.75rem; text-align: right;">Predicted AC Output</th>
+                            <th style="padding: 0.6rem 0.75rem; text-align: center;">Storage Source</th>
+                        </tr>
+                    </thead>
+                    <tbody id="db-predictions-tbody">
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 2.2rem; color: var(--text-muted);">
+                                Click <strong>"Retrieve Stored Predictions"</strong> above to load stored predictions from the database.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; font-size: 0.78rem; color: var(--text-muted); flex-wrap: wrap; gap: 0.5rem;">
+                <span id="db-record-count">Records: 0</span>
+                <span>Target: Table <code>solar_predictions</code> | Database: <code>industrial_solar.db</code></span>
+            </div>
+        </div>
+
+        <div id="limitations-container"></div>
+    </main>
+
+    <footer>
+        Industrial Solar Power Prediction and Energy Feasibility Analysis System | Academic Project
+    </footer>
+
+    <script src="js/common.js?v=2.2"></script>
+    <script src="js/index.js?v=2.2"></script>
+</body>
+</html>

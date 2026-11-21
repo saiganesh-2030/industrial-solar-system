@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State Tariff & Payback Ranking - Industrial Solar Feasibility</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="navbar-container"></div>
+
+    <main class="main-container">
+        <header class="page-header">
+            <h1>State Tariffs &amp; Payback Ranking</h1>
+            <p>State industrial electricity tariffs and payback ranking based on official regulatory schedules.</p>
+        </header>
+
+        <!-- Bar chart of tariffs across states -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <span class="card-title">Industrial Energy Charges by State (INR / kWh)</span>
+                    <span class="source-tag historical-api">OFFICIAL SERC SCHEDULES</span>
+                </div>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">
+                    Higher grid tariff yields shorter solar payback periods
+                </div>
+            </div>
+            <div style="height: 320px; position: relative;">
+                <canvas id="state-tariffs-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- Cross-State Ranking Table -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Cross-State Solar Financial Ranking (100 kW Benchmark Sizing)</span>
+                <span class="source-tag model-prediction">PAYBACK RANKING</span>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>State</th>
+                            <th>DISCOM</th>
+                            <th>Industrial Tariff</th>
+                            <th>Annual Solar Yield</th>
+                            <th>Annual Net Savings</th>
+                            <th>Payback Period</th>
+                            <th>Verification Status</th>
+                            <th>Regulatory Source</th>
+                        </tr>
+                    </thead>
+                    <tbody id="states-table-body">
+                        <tr><td colspan="9" style="text-align: center; color: var(--text-muted);">Loading state comparison...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top: 0.8rem; font-size: 0.78rem; color: var(--text-secondary); background: #f8fafc; padding: 0.6rem; border-radius: 4px;">
+                <strong>Faculty Notice on Tariff Verification:</strong> In accordance with project audit rules, all state tariffs remain marked with a "Not yet verified" badge until confirmed against the respective State Electricity Regulatory Commission's published retail tariff order. States with unverified tariffs are capped at Low confidence.
+            </div>
+        </div>
+
+        <div id="limitations-container"></div>
+    </main>
+
+    <footer>
+        Industrial Solar Power Prediction and Energy Feasibility Analysis System | Academic Project
+    </footer>
+
+    <script src="js/common.js"></script>
+    <script src="js/states.js"></script>
+</body>
+</html>

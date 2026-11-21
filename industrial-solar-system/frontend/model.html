@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Benchmarks & Metrics - Industrial Solar Feasibility</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div id="navbar-container"></div>
+
+    <main class="main-container">
+        <header class="page-header">
+            <h1>Model Benchmarks</h1>
+            <p>Evaluation metrics across regression models trained on 15-minute solar plant records.</p>
+        </header>
+
+        <!-- Active Plant Banner -->
+        <div style="margin-bottom: 1.25rem; background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; padding: 0.75rem 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);">Evaluated Solar Plant:</span>
+                <span id="model-active-plant-badge" class="badge badge-info" style="font-size: 0.85rem; padding: 0.35rem 0.65rem;">Plant 1 (4135001)</span>
+            </div>
+            <div id="model-plant-profile-note" style="font-size: 0.82rem; color: var(--text-muted);">
+                Standard field array with unconstrained continuous generation curve
+            </div>
+        </div>
+
+        <!-- Academic clarity note -->
+        <div class="card" style="border-left: 4px solid var(--primary); background: #f0f9ff;">
+            <div style="font-size: 0.88rem; color: var(--text-primary);">
+                <strong>Academic Clarification for Faculty Examination:</strong>
+                MAE (Mean Absolute Error), RMSE (Root Mean Squared Error), and R² (Coefficient of Determination) are
+                <em>statistical evaluation metrics</em> used to quantify error and variance explained. They are not
+                predictive models or machine learning algorithms. The algorithms evaluated are Linear Regression, Ridge,
+                Lasso, Support Vector Regressor (SVR), and Random Forest Regressor.
+            </div>
+        </div>
+
+        <!-- Algorithm Comparison Table and Chart -->
+        <div class="grid-2">
+            <!-- Table -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Model Comparison on Validation Set</span>
+                    <span class="source-tag model-prediction">NOTEBOOK RESULTS</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Algorithm</th>
+                                <th>MAE (kW)</th>
+                                <th>RMSE (kW)</th>
+                                <th>R² Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="metrics-table-body">
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: var(--text-muted);">Loading metrics...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="model-validation-note"
+                    style="margin-top: 0.8rem; font-size: 0.78rem; color: var(--text-secondary); background: #f8fafc; padding: 0.5rem; border-radius: 4px;">
+                    Random Forest was selected due to its superior non-linear fitting of module temperature and
+                    irradiance saturation, achieving an R² of 0.9954 on Plant 1 test records.
+                </div>
+            </div>
+
+            <!-- Comparison Bar Chart -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Mean Absolute Error (MAE) Comparison</span>
+                    <span style="font-size: 0.78rem; color: var(--text-muted);">Lower MAE is better</span>
+                </div>
+                <div style="height: 280px; position: relative;">
+                    <canvas id="model-mae-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selected Model Final Test Split Evaluation -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <span id="model-plant-title" class="card-title">Selected Model: Random Forest Regressor
+                        Pipeline</span>
+                    <span class="source-tag model-prediction">UNSEEN TEST SPLIT</span>
+                </div>
+                <div id="model-plant-tag" style="font-size: 0.78rem; color: var(--text-muted);">
+                    Evaluated on records on or after June 13, 2020
+                </div>
+            </div>
+            <div class="grid-3" style="margin-bottom: 1.25rem;">
+                <div class="stat-card">
+                    <div class="stat-label">Test Mean Absolute Error (MAE)</div>
+                    <div id="model-test-mae" class="stat-value" style="color: var(--primary);">-- kW</div>
+                    <div class="stat-subtext">Average absolute prediction deviation</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Test Root Mean Squared Error (RMSE)</div>
+                    <div id="model-test-rmse" class="stat-value">-- kW</div>
+                    <div class="stat-subtext">Penalizes large outlier discrepancies</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Test R² Score</div>
+                    <div id="model-test-r2" class="stat-value" style="color: var(--success);">--</div>
+                    <div id="model-test-r2-subtext" class="stat-subtext">Variance explained</div>
+                </div>
+            </div>
+            <p id="model-plant-explanation"
+                style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;"></p>
+
+            <!-- Feature Architecture and Pipeline -->
+            <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 6px; padding: 1rem;">
+                <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem;">Pipeline Feature Engineering and Hyperparameters
+                </h4>
+                <div class="grid-2" style="font-size: 0.82rem;">
+                    <div>
+                        <strong>Input Feature Columns (in exact order):</strong>
+                        <ol style="margin-left: 1.2rem; margin-top: 0.3rem; color: var(--text-secondary);">
+                            <li><code>PLANT_ID</code>: Categorical (4135001 or 4136001), OneHotEncoded.</li>
+                            <li><code>TIME_SIN</code>: <code>sin(2 * &pi; * minutes / 1440)</code> cyclic time feature.
+                            </li>
+                            <li><code>TIME_COS</code>: <code>cos(2 * &pi; * minutes / 1440)</code> cyclic time feature.
+                            </li>
+                            <li><code>AMBIENT_TEMPERATURE</code>: Ambient outdoor temperature (°C).</li>
+                            <li><code>MODULE_TEMPERATURE</code>: Back-of-panel PV temperature (°C).</li>
+                            <li><code>IRRADIATION</code>: Solar irradiance (kW/m²).</li>
+                        </ol>
+                    </div>
+                    <div>
+                        <strong>Tuned Hyperparameters:</strong>
+                        <ul
+                            style="margin-left: 1.2rem; margin-top: 0.3rem; color: var(--text-secondary); list-style: square;">
+                            <li><code>n_estimators</code>: 200 trees</li>
+                            <li><code>max_depth</code>: None (unconstrained tree growth)</li>
+                            <li><code>min_samples_split</code>: 5 samples</li>
+                            <li><code>min_samples_leaf</code>: 2 samples</li>
+                            <li><code>max_features</code>: 1.0 (all features considered at split)</li>
+                            <li><code>random_state</code>: 42 (reproducible cross-validation)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="limitations-container"></div>
+    </main>
+
+    <footer>
+        Industrial Solar Power Prediction and Energy Feasibility Analysis System | Academic Project
+    </footer>
+
+    <script src="js/common.js"></script>
+    <script src="js/model.js"></script>
+</body>
+
+</html>
